@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#25145f">
+<title>Guardianes de la Lectura | index.html</title>
+<style>
+:root{
+  --night:#1d164d;--purple:#5636a5;--violet:#7654c8;--gold:#ffd45a;
+  --cream:#fffaf0;--ink:#29234f;--mint:#baf3dc;--pink:#ffd4e5;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;min-height:100vh;padding:18px;
+  font-family:Arial,Helvetica,sans-serif;color:var(--cream);
+  background:radial-gradient(circle at 15% 10%,#7158bd 0,transparent 32%),
+             radial-gradient(circle at 90% 85%,#087e91 0,transparent 30%),
+             linear-gradient(140deg,#17113e,#35216f 60%,#123b61);
+}
+button,select,textarea{font:inherit}
+button{cursor:pointer}
+.app{max-width:1000px;margin:auto}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:15px}
+.brand{font-weight:900;letter-spacing:.5px;color:var(--gold)}
+.pill{background:#ffffff20;border:1px solid #ffffff45;border-radius:999px;padding:8px 13px;font-size:.9rem}
+.card{
+  background:#ffffff14;border:1px solid #ffffff35;border-radius:24px;
+  padding:clamp(18px,4vw,30px);box-shadow:0 16px 40px #09051f55;
+}
+.hero{text-align:center;overflow:hidden;position:relative}
+.hero-art{font-size:clamp(3rem,9vw,6rem);margin:10px 0}
+h1{font-size:clamp(2rem,5vw,3.3rem);color:var(--gold);margin:8px 0}
+h2{color:#ffe28b;margin-top:0}
+h3{color:#ffe28b}
+.subtitle{font-size:1.12rem;line-height:1.6;max-width:700px;margin:10px auto 20px}
+.btn{
+  border:0;border-radius:14px;padding:13px 19px;margin:5px;
+  font-weight:800;color:#2a2057;background:var(--gold);
+  box-shadow:0 4px 0 #b68124;transition:transform .15s;
+}
+.btn:hover{transform:translateY(-2px)}
+.btn.secondary{background:#d9d0ff;box-shadow:0 4px 0 #8e7bc8}
+.btn.ghost{background:#ffffff1c;color:white;border:1px solid #ffffff55;box-shadow:none}
+.btn:disabled{opacity:.55;cursor:not-allowed;transform:none}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:13px}
+.info{background:#ffffff13;border:1px solid #ffffff25;border-radius:16px;padding:15px;text-align:left}
+.info strong{color:var(--gold)}
+.rules{line-height:1.8;text-align:left;max-width:700px;margin:auto}
+.levels{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin:18px 0}
+.level{background:#ffffff16;border:1px solid #ffffff30;border-radius:12px;padding:9px 4px;font-size:.78rem}
+.level.active{background:var(--gold);color:var(--ink);font-weight:900}
+.level.done{background:#baf3dc;color:#183b35}
+.status{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:10px 0}
+.progress{height:12px;background:#ffffff30;border-radius:99px;overflow:hidden;margin:8px 0 18px}
+.progress>div{height:100%;width:0;background:linear-gradient(90deg,#baf3dc,#ffd45a);transition:width .3s}
+.reading{background:var(--cream);color:var(--ink);border-radius:18px;padding:18px;margin:14px 0;text-align:left}
+.reading h3{color:#5636a5;margin:0 0 8px}
+.reading p{line-height:1.75;font-size:1.04rem;margin:0}
+.reading .picture{font-size:2.3rem;margin-bottom:7px}
+.question{background:#ffffff13;border-radius:16px;padding:16px;margin:14px 0;text-align:left}
+.question h3{color:#ffe28b;font-size:1.08rem}
+.options{display:grid;grid-template-columns:1fr;gap:8px}
+.option{
+  background:#fff;color:#29234f;border:2px solid transparent;border-radius:12px;
+  padding:12px;text-align:left;font-weight:700;
+}
+.option:hover{border-color:#ffd45a}
+.option.correct{background:#c9f5df;border-color:#239b67}
+.option.wrong{background:#ffd9df;border-color:#d34b67}
+.feedback{min-height:24px;font-weight:800;margin:10px 0}
+.reward{background:linear-gradient(120deg,#fff0b8,#ffe4ef);color:#35245d;border-radius:18px;padding:20px;margin-top:15px}
+.reward .medal{font-size:3rem}
+textarea{width:100%;min-height:85px;border:2px solid #d9d0ff;border-radius:12px;padding:12px;color:var(--ink);resize:vertical}
+.small{font-size:.88rem;opacity:.9;line-height:1.5}
+.hidden{display:none!important}
+.center{text-align:center}
+.footer{text-align:center;font-size:.82rem;opacity:.8;padding:18px}
+.timer{font-size:1.15rem;font-weight:900;color:var(--gold)}
+.badge-row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.badge-chip{background:#ffffff1c;border:1px solid #ffffff40;border-radius:999px;padding:8px 11px}
+@media(max-width:560px){body{padding:10px}.levels{gap:4px}.level{font-size:.68rem;padding:8px 2px}.card{padding:16px}}
+@media print{body{background:white;color:#222}.btn{display:none}.card{box-shadow:none;border:1px solid #ccc}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="brand">📚 BIBLIOTECA MÁGICA</div>
+    <div class="pill">⭐ Guardianes de la Lectura</div>
+  </div>
+
+  <main id="welcome" class="card hero">
+    <div class="hero-art">🏰 📖 ✨ 🦉</div>
+    <h1>GUARDIANES DE LA LECTURA</h1>
+    <p class="subtitle">¡Diez historias han perdido sus secretos! Entra a la biblioteca mágica, lee con atención y supera cinco misiones para recuperar los libros encantados.</p>
+    <div class="grid">
+      <div class="info"><strong>🎯 Tu misión</strong><br>Leer, comprender, interpretar y resolver desafíos.</div>
+      <div class="info"><strong>📍 Locación</strong><br>La biblioteca mágica.</div>
+      <div class="info"><strong>⏱ Tiempo sugerido</strong><br>5 minutos de aventura. Puedes continuar si necesitas más tiempo.</div>
+    </div>
+    <h2 style="margin-top:24px">Elige tu avatar</h2>
+    <div class="badge-row" id="avatarChoices">
+      <button class="btn secondary" data-avatar="🕵️" aria-pressed="true">🕵️ Detective lector</button>
+      <button class="btn secondary" data-avatar="🧭" aria-pressed="false">🧭 Explorador</button>
+      <button class="btn secondary" data-avatar="🧙" aria-pressed="false">🧙 Mago del saber</button>
+    </div>
+    <p id="chosenAvatar" class="small">Tu personaje: 🕵️ Detective lector</p>
+    <div class="info" style="margin:18px auto;max-width:700px">
+      <h3>📜 Reglas del juego</h3>
+      <ol class="rules">
+        <li>Lee con atención las dos historias de cada misión.</li>
+        <li>Responde los cuatro desafíos de comprensión.</li>
+        <li>Cada respuesta correcta vale 5 puntos.</li>
+        <li>Avanza por los cinco niveles y reúne las insignias.</li>
+        <li>¡Piensa, participa y disfruta de la lectura!</li>
+      </ol>
+    </div>
+    <button class="btn" id="startBtn">🚀 COMENZAR AVENTURA</button>
+    <button class="btn ghost" id="musicBtn">🌙 Activar música de misterio</button>
+    <p class="small">La música ambiental es opcional y suena a volumen bajito. También puedes escuchar cada lectura con el botón «Escuchar lectura».</p>
+  </main>
+
+  <section id="game" class="card hidden">
+    <div class="status">
+      <span class="pill" id="missionCounter">MISIÓN 1 DE 5</span>
+      <span class="timer" id="timer">⏱ 05:00</span>
+      <span class="pill">⭐ <span id="score">0</span> / 100 puntos</span>
+    </div>
+    <div class="levels" id="levels">
+      <div class="level active">1. Novato</div>
+      <div class="level">2. Aprendiz</div>
+      <div class="level">3. Experto</div>
+      <div class="level">4. Maestro</div>
+      <div class="level">5. Leyenda</div>
+    </div>
+    <div class="progress"><div id="progressBar"></div></div>
+    <h2 id="missionTitle">Misión 1: El despertar de los libros</h2>
+    <p id="missionIntro" class="small"></p>
+    <div id="readings"></div>
+    <div class="center">
+      <button class="btn secondary" id="readAloudBtn">🔊 Escuchar lectura</button>
+      <button class="btn ghost" id="gameMusicBtn">🌙 Activar música de misterio</button>
+    </div>
+    <div id="questions"></div>
+    <div class="center">
+      <p class="feedback" id="missionFeedback" aria-live="polite"></p>
+      <button class="btn" id="finishMissionBtn" disabled>Comprobar misión</button>
+    </div>
+    <div id="missionReward" class="reward hidden center">
+      <div class="medal" id="rewardMedal">🏅</div>
+      <h2 id="rewardTitle" style="color:#5636a5">¡Misión superada!</h2>
+      <p id="rewardText"></p>
+      <button class="btn" id="nextMissionBtn">Continuar ➜</button>
+    </div>
+  </section>
+
+  <section id="finalChallenge" class="card hidden">
+    <div class="hero-art">🗝️ 🌙 📜</div>
+    <h1>RETO FINAL: EL SECRETO DE LA BIBLIOTECA</h1>
+    <p class="subtitle">La biblioteca mágica está a punto de revelar su último secreto. Resuelve estas tres pistas para abrir el cofre de las historias.</p>
+    <div class="info"><strong>🕯️ Consejo:</strong> recuerda las lecturas, piensa con calma y elige la respuesta que mejor explica cada pista.</div>
+    <div id="finalQuestions"></div>
+    <div class="center">
+      <p class="feedback" id="finalChallengeFeedback" aria-live="polite"></p>
+      <button class="btn" id="unlockTreasureBtn" disabled>🗝️ Abrir el cofre mágico</button>
+    </div>
+  </section>
+
+  <section id="ending" class="card hidden center">
+    <div class="hero-art">👑 📚 🌟</div>
+    <h1>¡MISIÓN CUMPLIDA!</h1>
+    <h2 id="finalLevel">¡Eres una Leyenda de la Lectura!</h2>
+    <p id="finalScore" class="subtitle"></p>
+    <div class="reward">
+      <div class="medal">🏆</div>
+      <h2 style="color:#5636a5">Diploma simbólico</h2>
+      <p>Se reconoce tu esfuerzo como <strong>Guardián o Guardiana de la Lectura</strong>.</p>
+      <p id="finalBadges"></p>
+    </div>
+    <h3>💭 Reflexiona sobre tu aventura</h3>
+    <p>¿Qué historia te gustó más y qué aprendiste de ella?</p>
+    <textarea id="reflection" placeholder="Escribe o comenta tu respuesta..."></textarea>
+    <div>
+      <button class="btn" id="printBtn">🖨️ Imprimir reconocimiento</button>
+      <button class="btn secondary" id="restartBtn">🔄 Volver a jugar</button>
+    </div>
+  </section>
+  <div class="footer">Proyecto gamificado · Segundo de Educación General Básica · Comprensión lectora</div>
+</div>
+
+<script>
+const missions = [
+{
+ title:"MISIÓN 1: El despertar de los libros", level:"Novato",
+ intro:"Abre los primeros libros y encuentra información que aparece directamente en las historias.",
+ reward:"Lector principiante", icon:"📖", benefit:"Primera llave de la biblioteca",
+ readings:[
+  {title:"Lectura 1: El conejo curioso",icon:"🐰",text:"Había una vez un pequeño conejo llamado Tito que vivía cerca de un bosque. Todas las mañanas salía a explorar y descubrir cosas nuevas. Un día encontró una caja debajo de un árbol. La abrió con mucho cuidado y descubrió un hermoso libro de cuentos. Tito llevó el libro a su casa y pidió a su mamá que se lo leyera. Desde aquel día, descubrió que leer era una maravillosa aventura."},
+  {title:"Lectura 2: La mariposa y la flor",icon:"🦋",text:"Una pequeña mariposa llamada Lila volaba por un jardín buscando flores. De pronto encontró una flor marchita que necesitaba agua. Lila buscó ayuda y llamó a las abejas y a otros animalitos. Entre todos llevaron pequeñas gotas de agua hasta la flor. Poco a poco, la flor recuperó su belleza. Desde entonces, Lila aprendió que ayudar a los demás hace que el mundo sea mejor."}
+ ],
+ questions:[
+  {text:"¿Cómo se llamaba el conejo de la primera lectura?",opts:["Tito","Tomás","Nico"],a:0,why:"El conejo se llamaba Tito."},
+  {text:"¿Dónde encontró Tito la caja?",opts:["Junto al río","Debajo de un árbol","En su escuela"],a:1,why:"Tito encontró la caja debajo de un árbol."},
+  {text:"¿Qué necesitaba la flor de la segunda lectura?",opts:["Una casa","Un libro","Agua"],a:2,why:"La flor estaba marchita y necesitaba agua."},
+  {text:"¿Quiénes ayudaron a Lila?",opts:["Las abejas y otros animalitos","Los peces","Los perros"],a:0,why:"Lila llamó a las abejas y a otros animalitos."}
+ ],
+ creative:"Cuenta una forma en la que tú puedes ayudar a alguien."
+},
+{
+ title:"MISIÓN 2: Detectives de palabras",level:"Aprendiz",
+ intro:"Conviértete en detective: descubre detalles y comprende palabras importantes.",
+ reward:"Detective lector",icon:"🔍",benefit:"Lupa mágica para encontrar pistas",
+ readings:[
+  {title:"Lectura 3: El jardín de las palabras",icon:"🌻",text:"Sofía tenía un pequeño jardín en su escuela. Allí sembró rosas, margaritas y girasoles. Cada día regaba las plantas y quitaba las hojas secas. Una mañana encontró una pequeña planta que estaba creciendo junto a una piedra. Sofía decidió cuidarla. Después de varias semanas, apareció una hermosa flor amarilla. La niña comprendió que, con paciencia y dedicación, las cosas buenas pueden crecer."},
+  {title:"Lectura 4: La aventura de Tomás",icon:"🌳",text:"Tomás salió de paseo con su abuelo por el bosque. Mientras caminaban, escucharon un pequeño sonido entre los árboles. Al acercarse, encontraron una ardilla que había perdido su nuez. Tomás observó el lugar y descubrió que la nuez estaba junto a una roca. La recogió y se la entregó a la ardilla. El pequeño animal saltó de alegría y regresó a su árbol. Tomás continuó su paseo feliz por haber ayudado."}
+ ],
+ questions:[
+  {text:"¿Qué flores sembró Sofía en su jardín?",opts:["Rosas, margaritas y girasoles","Tulipanes y claveles","Solo flores rojas"],a:0,why:"Sofía sembró rosas, margaritas y girasoles."},
+  {text:"¿Qué significa cuidar una planta con dedicación?",opts:["Olvidarla","Atenderla con esfuerzo y cariño","Arrancarla"],a:1,why:"La dedicación significa poner atención y esfuerzo en algo."},
+  {text:"¿Con quién salió Tomás de paseo?",opts:["Con su mamá","Con su hermano","Con su abuelo"],a:2,why:"Tomás salió de paseo con su abuelo."},
+  {text:"¿Qué había perdido la ardilla?",opts:["Una nuez","Una flor","Un libro"],a:0,why:"La ardilla había perdido su nuez."}
+ ],
+ creative:"Elige una palabra de las lecturas y crea una oración con ella."
+},
+{
+ title:"MISIÓN 3: El secreto de las historias",level:"Experto",
+ intro:"Observa cómo suceden los hechos. Descubre el orden y la idea principal de cada historia.",
+ reward:"Explorador de historias",icon:"🧭",benefit:"Mapa mágico de las historias",
+ readings:[
+  {title:"Lectura 5: El árbol generoso",icon:"🌳",text:"En medio de un pueblo había un árbol grande que daba sombra a todos los habitantes. Durante los días soleados, los niños jugaban debajo de sus ramas y los pájaros construían sus nidos. Un día llegó un fuerte viento y algunas ramas se rompieron. Los vecinos se reunieron para cuidar el árbol y limpiar el lugar. Gracias al trabajo de todos, el árbol continuó creciendo y dando sombra al pueblo."},
+  {title:"Lectura 6: La visita inesperada",icon:"🦔",text:"Una mañana, Nico el erizo escuchó que alguien tocaba su puerta. Al abrir, encontró a una pequeña ave que estaba buscando refugio porque había comenzado a llover. Nico la invitó a entrar y le ofreció un lugar seco para descansar. Cuando dejó de llover, el ave agradeció su ayuda y prometió visitarlo nuevamente. Desde aquel día, los dos se hicieron grandes amigos."}
+ ],
+ questions:[
+  {text:"¿Qué hacían los niños debajo de las ramas del árbol?",opts:["Dormían todo el día","Jugaban","Construían una escuela"],a:1,why:"Los niños jugaban debajo de las ramas."},
+  {text:"¿Qué ocurrió antes de que los vecinos cuidaran el árbol?",opts:["Llegó un fuerte viento y rompió algunas ramas","El árbol dio frutos","Los niños se fueron"],a:0,why:"Primero llegó el viento y rompió algunas ramas."},
+  {text:"¿Por qué el ave buscó refugio en casa de Nico?",opts:["Tenía hambre","Quería jugar","Había comenzado a llover"],a:2,why:"El ave necesitaba un lugar seco porque llovía."},
+  {text:"¿Cuál es la idea principal de la historia de Nico?",opts:["Es bueno ayudar y recibir a quien lo necesita","Los erizos no salen de casa","La lluvia nunca termina"],a:0,why:"Nico ayudó al ave y así nació una amistad."}
+ ],
+ creative:"Ordena oralmente una historia: ¿qué sucede al inicio, después y al final?"
+},
+{
+ title:"MISIÓN 4: El desafío de los sabios",level:"Maestro",
+ intro:"Piensa como un sabio lector. Descubre las enseñanzas y explica por qué actúan los personajes.",
+ reward:"Maestro de la comprensión",icon:"🦉",benefit:"Corona de la sabiduría",
+ readings:[
+  {title:"Lectura 7: El león y el ratón",icon:"🦁",text:"Un día, un león dormía tranquilamente bajo un árbol. Un pequeño ratón pasó corriendo cerca de él y lo despertó. El león atrapó al ratón, pero este le pidió que lo dejara libre y prometió ayudarlo algún día. El león se rio, pero decidió dejarlo ir. Tiempo después, el león quedó atrapado en una red. El ratón escuchó sus rugidos y acudió a ayudarlo. Con sus pequeños dientes rompió la red y logró liberarlo. El león comprendió que todos podemos ayudar, sin importar nuestro tamaño."},
+  {title:"Lectura 8: La tortuga perseverante",icon:"🐢",text:"Tina era una tortuga que quería aprender a leer. Al principio le costaba reconocer algunas palabras, pero todos los días practicaba con sus libros. Su amiga la ardilla le enseñaba nuevas letras y la animaba a continuar. Después de mucho esfuerzo, Tina pudo leer un cuento completo. Estaba muy feliz porque comprendió que aprender requiere paciencia y constancia."}
+ ],
+ questions:[
+  {text:"¿Por qué el león dejó libre al ratón?",opts:["Porque el ratón se lo pidió","Porque tenía sueño","Porque encontró comida"],a:0,why:"El ratón le pidió que lo dejara libre y prometió ayudarlo."},
+  {text:"¿Cómo pudo el ratón liberar al león?",opts:["Llamó a otro león","Rompió la red con sus dientes","Abrió una puerta"],a:1,why:"El ratón rompió la red con sus pequeños dientes."},
+  {text:"¿Qué hizo Tina para aprender a leer?",opts:["Dejó de practicar","Esperó sin hacer nada","Practicó todos los días"],a:2,why:"Tina practicaba diariamente con sus libros."},
+  {text:"¿Qué enseñanza comparten las dos historias?",opts:["La ayuda y la perseverancia son importantes","Solo los grandes pueden ayudar","Aprender no necesita esfuerzo"],a:0,why:"El ratón ayudó al león y Tina logró su meta con constancia."}
+ ],
+ creative:"¿Qué le dirías a un compañero que está aprendiendo algo y encuentra dificultades?"
+},
+{
+ title:"MISIÓN 5: El tesoro de la lectura",level:"Leyenda",
+ intro:"Llegaste al último desafío. Interpreta, opina y usa tu imaginación para recuperar el tesoro de la biblioteca.",
+ reward:"Leyenda de la lectura",icon:"👑",benefit:"Diploma simbólico de Guardián de la Lectura",
+ readings:[
+  {title:"Lectura 9: La leyenda del colibrí",icon:"🐦",text:"Cuenta una antigua leyenda que un día el bosque sufrió una gran sequía. Los animales estaban preocupados porque las flores comenzaban a marchitarse. Un pequeño colibrí decidió buscar agua. Voló sobre montañas y árboles hasta encontrar un manantial. Con su pequeño pico llevó gotitas de agua a las flores. Aunque su esfuerzo parecía pequeño, otros animales decidieron ayudarlo. Todos trabajaron juntos y el bosque volvió a llenarse de vida. Desde entonces, el colibrí representa la esperanza y el esfuerzo por ayudar a los demás."},
+  {title:"Lectura 10: La biblioteca encantada",icon:"🏰",text:"En un pequeño pueblo existía una biblioteca muy especial. Se decía que sus libros guardaban secretos y aventuras maravillosas. Una niña llamada Emma decidió visitarla. Al entrar, encontró un libro que brillaba entre muchos otros. Lo abrió y descubrió historias de animales, lugares lejanos y personajes valientes. Emma comenzó a leer todos los días y compartió sus historias con sus compañeros. Pronto, muchos niños visitaron la biblioteca y descubrieron que cada libro era una puerta hacia un nuevo mundo."}
+ ],
+ questions:[
+  {text:"¿Qué problema tenía el bosque en la leyenda del colibrí?",opts:["Una gran sequía","Una tormenta de nieve","Falta de árboles"],a:0,why:"El bosque sufría una gran sequía."},
+  {text:"¿Qué representa el colibrí en la leyenda?",opts:["El miedo","La esperanza y el esfuerzo por ayudar","La tristeza"],a:1,why:"El colibrí representa la esperanza y el esfuerzo por ayudar."},
+  {text:"¿Qué encontró Emma en la biblioteca?",opts:["Una caja de juguetes","Una pelota","Un libro que brillaba"],a:2,why:"Emma encontró un libro brillante entre muchos otros."},
+  {text:"¿Por qué es importante compartir las historias?",opts:["Porque otras personas también pueden disfrutar y aprender","Porque los libros deben esconderse","Porque nadie más debe leer"],a:0,why:"Compartir historias anima a otras personas a descubrir la lectura."}
+ ],
+ creative:"Imagina que escribes un cuento. ¿Cómo se llamaría y quién sería su personaje principal?"
+}
+];
+
+let currentMission=0,score=0,avatar="🕵️",answersState=[],completed=[];
+let seconds=300,timerHandle=null,musicOn=false,audioCtx=null,musicTimer=null;
+let questionLocked=false, finalAnswers=[];
+
+const $=id=>document.getElementById(id);
+
+document.querySelectorAll("[data-avatar]").forEach(btn=>{
+ btn.addEventListener("click",()=>{
+  avatar=btn.dataset.avatar;
+  document.querySelectorAll("[data-avatar]").forEach(b=>b.setAttribute("aria-pressed",String(b===btn)));
+  $("chosenAvatar").textContent="Tu personaje: "+avatar+" "+btn.textContent.replace(avatar,"").trim();
+ });
+});
+
+$("startBtn").addEventListener("click",()=>{
+ $("welcome").classList.add("hidden");$("game").classList.remove("hidden");
+ renderMission();startTimer();
+});
+$("finishMissionBtn").addEventListener("click",finishMission);
+$("nextMissionBtn").addEventListener("click",()=>{
+ currentMission++;
+ if(currentMission<missions.length)renderMission();else showFinalChallenge();
+});
+$("restartBtn").addEventListener("click",()=>location.reload());
+$("printBtn").addEventListener("click",()=>window.print());
+$("readAloudBtn").addEventListener("click",speakReadings);
+$("musicBtn").addEventListener("click",toggleMusic);
+$("gameMusicBtn").addEventListener("click",toggleMusic);
+$("unlockTreasureBtn").addEventListener("click",()=>{
+ if(finalAnswers.some(a=>a===null))return;
+ $("finalChallenge").classList.add("hidden");showEnding();
+});
+
+function startTimer(){
+ if(timerHandle)return;
+ timerHandle=setInterval(()=>{
+  if(seconds>0)seconds--;
+  const m=String(Math.floor(seconds/60)).padStart(2,"0");
+  const s=String(seconds%60).padStart(2,"0");
+  $("timer").textContent="⏱ "+m+":"+s;
+  if(seconds===0){
+   clearInterval(timerHandle);timerHandle=null;
+   $("timer").textContent="⏱ Tiempo sugerido cumplido";
+   $("timer").title="Puedes continuar con la actividad.";
+  }
+ },1000);
+}
+function renderMission(){
+ const m=missions[currentMission];
+ questionLocked=false;
+ answersState=Array(m.questions.length).fill(null);
+ $("missionCounter").textContent=`MISIÓN ${currentMission+1} DE 5`;
+ $("missionTitle").textContent=m.title;
+ $("missionIntro").textContent=m.intro;
+ $("missionFeedback").textContent="";
+ $("missionReward").classList.add("hidden");
+ $("finishMissionBtn").disabled=true;
+ $("finishMissionBtn").classList.remove("hidden");
+ $("readings").innerHTML="";
+ m.readings.forEach(r=>{
+  const article=document.createElement("article");
+  article.className="reading";
+  const title=document.createElement("h3");
+  title.textContent=r.icon+" "+r.title;
+  const p=document.createElement("p");
+  p.textContent=r.text;
+  article.append(title,p);
+  $("readings").appendChild(article);
+ });
+ $("questions").innerHTML="";
+ m.questions.forEach((q,i)=>{
+  const wrap=document.createElement("div");wrap.className="question";
+  const title=document.createElement("h3");title.textContent=`Reto ${i+1}. ${q.text}`;
+  const options=document.createElement("div");options.className="options";
+  q.opts.forEach((opt,j)=>{
+   const b=document.createElement("button");b.className="option";b.textContent=String.fromCharCode(65+j)+". "+opt;
+   b.addEventListener("click",()=>chooseAnswer(i,j,options));
+   options.appendChild(b);
+  });
+  const fb=document.createElement("div");fb.className="feedback";fb.id="feedback"+i;fb.setAttribute("aria-live","polite");
+  wrap.append(title,options,fb);$("questions").appendChild(wrap);
+ });
+ const creative=document.createElement("div");creative.className="question";
+ creative.innerHTML="<h3>🌟 Reto creativo (para conversar)</h3><p>"+m.creative+"</p><textarea aria-label='Respuesta al reto creativo' placeholder='Escribe tu idea o compártela con tu clase...'></textarea>";
+ $("questions").appendChild(creative);
+ updateProgress();
+ const levels=document.querySelectorAll(".level");
+ levels.forEach((el,i)=>{
+  el.classList.toggle("active",i===currentMission);
+  el.classList.toggle("done",i<currentMission);
+ });
+}
+function chooseAnswer(qIndex,optIndex,container){
+ if(questionLocked||answersState[qIndex]!==null)return;
+ answersState[qIndex]=optIndex;
+ const q=missions[currentMission].questions[qIndex];
+ [...container.children].forEach((b,i)=>{
+  b.disabled=true;
+  if(i===q.a)b.classList.add("correct");
+  if(i===optIndex&&i!==q.a)b.classList.add("wrong");
+ });
+ const correct=optIndex===q.a;
+ $("feedback"+qIndex).textContent=(correct?"✓ ¡Muy bien! ":"💡 Sigue aprendiendo. ")+q.why;
+ $("feedback"+qIndex).style.color=correct?"#baf3dc":"#ffd4e5";
+ if(answersState.every(a=>a!==null))$("finishMissionBtn").disabled=false;
+}
+function finishMission(){
+ if(answersState.some(a=>a===null))return;
+ questionLocked=true;
+ const m=missions[currentMission];
+ let gained=0;
+ m.questions.forEach((q,i)=>{if(answersState[i]===q.a)gained+=5;});
+ score+=gained;
+ completed[currentMission]=gained;
+ $("score").textContent=score;
+ updateProgress();
+ $("finishMissionBtn").classList.add("hidden");
+ $("missionReward").classList.remove("hidden");
+ $("rewardMedal").textContent=gained===20?"🏅":"📘";
+ $("rewardTitle").textContent=gained===20?"¡Misión perfecta!":"¡Misión completada!";
+ $("rewardText").textContent=`Ganaste ${gained} de 20 puntos. Insignia: ${m.reward}. Beneficio: ${m.benefit}.`;
+ $("missionFeedback").textContent=gained===20?"¡Todas tus respuestas fueron correctas!":"¡Buen trabajo! Sigue practicando para fortalecer tu comprensión.";
+ $("nextMissionBtn").textContent=currentMission===4?"Ir al reto final 🗝️":"Siguiente misión ➜";
+}
+function updateProgress(){
+ $("progressBar").style.width=score+"%";
+}
+function showFinalChallenge(){
+ $("game").classList.add("hidden");
+ $("finalChallenge").classList.remove("hidden");
+ const qs=[
+  {text:"¿Qué ayudó a recuperar la vida del bosque en la leyenda del colibrí?",opts:["El trabajo en equipo","Un libro mágico","La llegada de la lluvia"],a:0,why:"Todos los animales colaboraron para ayudar al bosque."},
+  {text:"¿Qué nos enseñó la historia del león y el ratón?",opts:["Que solo los grandes pueden ayudar","Que todos podemos ayudar a los demás","Que es mejor estar solo"],a:1,why:"El ratón, aunque era pequeño, pudo ayudar al león."},
+  {text:"¿Cuál es el secreto más importante de la biblioteca encantada?",opts:["Los libros sirven para decorar","Leer permite descubrir, imaginar y aprender","Los cuentos deben guardarse sin abrir"],a:1,why:"Cada libro abre la puerta a nuevas aventuras y aprendizajes."}
+ ];
+ finalAnswers=Array(qs.length).fill(null);
+ $("finalQuestions").innerHTML="";
+ $("finalChallengeFeedback").textContent="";
+ $("unlockTreasureBtn").disabled=true;
+ qs.forEach((q,i)=>{
+  const wrap=document.createElement("div");wrap.className="question";
+  const title=document.createElement("h3");title.textContent=`Pista ${i+1}. ${q.text}`;
+  const options=document.createElement("div");options.className="options";
+  q.opts.forEach((opt,j)=>{
+   const b=document.createElement("button");b.className="option";b.textContent=String.fromCharCode(65+j)+". "+opt;
+   b.addEventListener("click",()=>{
+    if(finalAnswers[i]!==null)return;
+    finalAnswers[i]=j;
+    [...options.children].forEach((button,k)=>{button.disabled=true;if(k===q.a)button.classList.add("correct");if(k===j&&j!==q.a)button.classList.add("wrong");});
+    const feedback=document.createElement("p");feedback.className="feedback";feedback.textContent=(j===q.a?"✓ ¡Pista resuelta! ":"💡 ¡Sigue adelante! ")+q.why;feedback.style.color=j===q.a?"#baf3dc":"#ffd4e5";wrap.appendChild(feedback);
+    if(finalAnswers.every(a=>a!==null)){
+     const correct=finalAnswers.filter((a,k)=>a===qs[k].a).length;
+     $("finalChallengeFeedback").textContent=correct===3?"¡Excelente! Has descubierto el secreto de la biblioteca.":`Has resuelto ${correct} de 3 pistas. ¡Lo importante es intentarlo y aprender!`;
+     $("unlockTreasureBtn").disabled=false;
+    }
+   });
+   options.appendChild(b);
+  });
+  wrap.append(title,options);$("finalQuestions").appendChild(wrap);
+ });
+}
+
+function showEnding(){
+ if(timerHandle){clearInterval(timerHandle);timerHandle=null;}
+ $("game").classList.add("hidden");$("ending").classList.remove("hidden");
+ let level="Novato";
+ if(score>=20)level="Aprendiz";
+ if(score>=40)level="Experto";
+ if(score>=60)level="Maestro";
+ if(score>=80)level="Leyenda";
+ $("finalLevel").textContent=score>=80?"¡Eres una Leyenda de la Lectura!":"Tu nivel alcanzado: "+level;
+ $("finalScore").textContent=`Obtuviste ${score} de 100 puntos. ¡Gracias por participar en esta aventura!`;
+ const badges=completed.map((points,i)=>points===20?missions[i].reward:null).filter(Boolean);
+ $("finalBadges").textContent=badges.length? "Insignias obtenidas: "+badges.join(" · "):"¡Cada misión completada es un paso para convertirte en un gran lector!";
+}
+function speakReadings(){
+ if(!("speechSynthesis" in window)){alert("Tu navegador no permite escuchar la lectura automáticamente.");return;}
+ speechSynthesis.cancel();
+ const m=missions[currentMission];
+ const text=m.readings.map(r=>r.title+". "+r.text).join(". ");
+ const utter=new SpeechSynthesisUtterance(text);
+ utter.lang="es-ES";utter.rate=.88;
+ speechSynthesis.speak(utter);
+}
+function toggleMusic(){
+ if(!musicOn){
+  try{
+   audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();
+   audioCtx.resume();musicOn=true;
+   $("musicBtn").textContent="🔇 Apagar música de misterio";
+   $("gameMusicBtn").textContent="🔇 Apagar música de misterio";
+   playSoftTone();
+   musicTimer=setInterval(playSoftTone,5200);
+  }catch(e){alert("No se pudo activar el sonido en este navegador.");}
+ }else{
+  musicOn=false;clearInterval(musicTimer);
+  $("musicBtn").textContent="🌙 Activar música de misterio";
+  $("gameMusicBtn").textContent="🌙 Activar música de misterio";
+  if(audioCtx)audioCtx.suspend();
+ }
+}
+function playSoftTone(){
+ if(!audioCtx||!musicOn)return;
+ // Ambiente misterioso, lento y muy suave; se activa solo cuando el usuario lo solicita.
+ const now=audioCtx.currentTime;
+ const notes=[110,164.81,220];
+ notes.forEach((freq,i)=>{
+  const osc=audioCtx.createOscillator(),gain=audioCtx.createGain();
+  osc.type="sine";osc.frequency.setValueAtTime(freq,now);
+  gain.gain.setValueAtTime(.0001,now);
+  gain.gain.linearRampToValueAtTime(.009,now+1.2+i*.25);
+  gain.gain.exponentialRampToValueAtTime(.0001,now+4.8);
+  osc.connect(gain);gain.connect(audioCtx.destination);
+  osc.start(now+i*.18);osc.stop(now+5);
+ });
+}
+
+</script>
+</body>
+</html>
